@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String
+  description String
+  imageUrl    String
+  createdAt   DateTime @default(now())
+}
+
+model About {
+  id           Int     @id @default(autoincrement())
+  bio          String
+  profileImage String?
+}
+
+model Cv {
+  id       Int     @id @default(autoincrement())
+  name     String
+  title    String
+  bio      String
+  email    String?
+  phone    String?
+  location String?
+  photoUrl String?
+}

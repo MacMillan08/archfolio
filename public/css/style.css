@@ -1,0 +1,734 @@
+:root {
+  --bg: #f4f4f2;
+  --bg-alt: #ebeae6;
+  --paper: #ffffff;
+  --ink: #17140f;
+  --muted: #7a7568;
+  --line: #ddd9d0;
+  --accent: #8a3324;
+  --accent-soft: rgba(138, 51, 36, 0.08);
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --gutter: clamp(1.25rem, 5vw, 3.5rem);
+  --sidebar-w: 17rem;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+html.has-splash { overflow: hidden; }
+
+/* Genel iskelet: body = 2 kolonlu grid (sidebar | içerik). Sidebar sabit genişlikte,
+   içerik kolonu "minmax(0,1fr)" ile kalan alanı alır ve asla sidebar'a taşamaz. */
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Tipografi: yalnızca H1/H2 serif; diğer her şey Inter */
+h1, h2 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  line-height: 1.05;
+  margin: 0;
+  color: var(--ink);
+}
+h3 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* ===== Sol dikey menü ===== */
+.nav-toggle {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: rgba(244, 244, 242, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.nav-toggle span { width: 1.1rem; height: 1px; background: var(--ink); transition: transform 0.3s var(--ease-out), opacity 0.3s var(--ease-out); }
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.nav-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: rgba(17, 14, 10, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-out);
+}
+body.nav-open .nav-scrim { opacity: 1; pointer-events: auto; }
+
+.site-header {
+  /* Grid'in 1. kolonu: kesin sınır, içerik kolonuyla asla örtüşmez.
+     position:sticky ile scroll sırasında viewport'a sabitlenir; align-self:start
+     olmadan grid satırı .main-content'in boyuna göre gerilip sidebar'ı da uzatırdı. */
+  grid-column: 1;
+  align-self: start;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  width: var(--sidebar-w);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vh, 4.5rem);
+  padding: clamp(2rem, 5vh, 3.5rem) clamp(1.75rem, 3vw, 2.5rem);
+  background: var(--bg);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+}
+
+.brand { display: flex; flex-direction: column; gap: 0.35rem; }
+.brand-name {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+.brand-role {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.site-header nav { display: flex; flex-direction: column; gap: 0.35rem; }
+.site-header nav a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition: color 0.3s var(--ease-out), gap 0.3s var(--ease-out);
+}
+.nav-index { font-family: var(--font-serif); font-size: 0.85rem; font-weight: 500; color: var(--muted); transition: color 0.3s var(--ease-out); }
+.site-header nav a:hover { color: var(--accent); gap: 1rem; }
+.site-header nav a:hover .nav-index { color: var(--accent); }
+
+.nav-foot {
+  margin-top: auto;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Grid'in 2. kolonu: main + footer'ı taşıyan dikey flex kolon.
+   min-width:0 olmadan grid item'lar içeriklerine göre taşabilir (grid'in klasik tuzağı);
+   min-height:100vh + footer'ın flex-shrink:0 olması, footer'ı her zaman içeriğin altına,
+   kısa sayfalarda da viewport'un dibine sabitler — sidebar'ın alanına asla girmez. */
+.main-content {
+  grid-column: 2;
+  min-width: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.main-content > main { flex: 1 0 auto; min-width: 0; }
+.main-content > footer.site-footer { flex-shrink: 0; }
+
+@media (max-width: 900px) {
+  .nav-toggle { display: flex; }
+  body { grid-template-columns: minmax(0, 1fr); }
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translateX(-100%);
+    width: min(82vw, 19rem);
+    box-shadow: 0 0 0 transparent;
+    transition: transform 0.4s var(--ease-out);
+  }
+  body.nav-open .site-header { transform: translateX(0); box-shadow: 20px 0 40px rgba(17, 14, 10, 0.15); }
+  .main-content { grid-column: 1; padding-top: 4.5rem; }
+}
+
+/* ===== Splash ekranı =====
+   Sıra: logo.png tek başına durur → (SADECE fade) sol.png/sag.png belirir, henüz
+   birleşik → (SADECE hareket, kayma değil kısa bir açılma) ayrılır → tam aralarında
+   "CAN DURMUŞ" belirir → site açılır. JS (main.js) #splash-screen'e sırayla .p-swap,
+   .p-open ve .p-text sınıflarını ekliyor; her sınıf tek bir CSS transition tetikliyor.
+
+   KRİTİK KURAL (iki görselin üst üste bindiği önceki hatanın kök nedeni buydu):
+   fade (opacity) ile hareket (transform) HİÇBİR ZAMAN aynı anda olmaz — .p-swap
+   yalnızca opaklığı değiştirir (görseller o an hâlâ birleşik durur), .p-open
+   yalnızca konumu değiştirir (görseller o an zaten tam opaktır). Ayrıca yarım
+   logoların birbirinden uzaklaşma mesafesi (--gap), metnin olabilecek en geniş
+   haliyle bile asla çakışmayacak şekilde metinden HER ZAMAN daha geniş kalacak şekilde
+   hesaplandı (aşağıdaki yorumlarda uç değerler için elle doğrulandı). Metin, sadece
+   yarım logolar tamamen ayrıldıktan SONRA görünür hale gelir.
+
+   Taşma güvencesi (dört bağımsız katman, her biri tek başına yeterli):
+     1) #splash-screen    → position:fixed; inset:0 viewport dışına çıkamaz
+     2) .splash-frame     → overflow:hidden + sınırlı genişlik (min(80vw, 34rem))
+     3) .splash-halves    → overflow:hidden
+     4) .splash-text-mask → overflow:hidden */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--bg);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s var(--ease-out), visibility 0.6s;
+}
+#splash-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+#splash-screen[hidden] { display: none; }
+
+.splash-frame {
+  position: relative;
+  width: min(80vw, 34rem);
+  min-height: clamp(6rem, 16vw, 10rem);
+  overflow: hidden;
+  /* Yarım logoların ayrılma mesafesi (metin için gereken boşluk).
+     Uç değer kontrolü: 320px vp → 9rem gap / metin en fazla ~7.1rem (1rem font) → sığar.
+     2000px+ vp → 17rem gap (tavan) / metin en fazla ~13.5rem (1.9rem font, tavan) → sığar.
+     Her viewport'ta halves+gap toplamı .splash-frame genişliğinin belirgin altında kalır. */
+  --gap: clamp(9rem, 30vw, 17rem);
+}
+
+/* Aşama 0: logo.png tek parça, çerçevenin ortasında durur. */
+.splash-logo-solo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+.splash-logo-solo img { display: block; width: clamp(5.5rem, 14vw, 9rem); height: auto; max-height: 100%; }
+.splash-logo-solo.img-missing::before {
+  content: "CAN DURMUŞ";
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.splash-logo-solo.img-missing img { display: none; }
+
+/* Aşama 1 (gizli başlar): sol.png + sag.png arada sıfır boşlukla, logo.png'nin
+   kapladığı aynı alanda, tam onun altında dururlar. */
+.splash-halves {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.splash-half { flex: 0 0 auto; width: clamp(2.75rem, 7vw, 4.5rem); }
+.splash-half img { display: block; width: 100%; height: auto; }
+.splash-half.img-missing { aspect-ratio: 3 / 4; background: var(--bg-alt); border: 1px solid var(--line); }
+.splash-half.img-missing img { display: none; }
+.splash-half-left,
+.splash-half-right { transform: translateX(0); transition: transform 0.55s var(--ease-out); }
+
+/* İki ayrı aşama, kesinlikle çakışmadan: önce SADECE fade (logo↔sol/sağ, ikisi de
+   henüz birleşik/kımıldamıyor), o tamamlanınca SADECE hareket (artık tam opak olan
+   sol/sağ ayrılır). Fade ile hareketin aynı anda olması, iki görselin üst üste
+   bindiği görünür hatanın kök nedeniydi — bu yüzden bilinçli olarak ayrıştırıldı. */
+#splash-screen.p-swap .splash-logo-solo { opacity: 0; }
+#splash-screen.p-swap .splash-halves { opacity: 1; }
+#splash-screen.p-open .splash-half-left { transform: translateX(calc(-0.5 * var(--gap))); }
+#splash-screen.p-open .splash-half-right { transform: translateX(calc(0.5 * var(--gap))); }
+
+/* Tam olarak iki parçanın ortasında SADECE saf metin: logo, resim veya "+" yok */
+.splash-text-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+.splash-text {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 3.4vw, 1.9rem);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+/* p-text: yarım logolar tamamen ayrıldıktan SONRA metin belirir */
+#splash-screen.p-text .splash-text { opacity: 1; }
+
+.splash-skip {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 2.5rem);
+  bottom: clamp(1.25rem, 4vw, 2.5rem);
+  padding: 0.55rem 1.1rem;
+  background: transparent;
+  border: 1px solid rgba(23, 20, 15, 0.2);
+  border-radius: 999px;
+  color: rgba(23, 20, 15, 0.6);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+.splash-skip:hover { color: var(--ink); border-color: rgba(23, 20, 15, 0.45); }
+
+/* ===== Hero: sonsuz döngülü amblem (kayan yazı/ticker YOK) =====
+   logo.png ↔ sol.png/sag.png geçişleri (açılma ve kapanma) artık kısa bir KARARMA
+   (filter:brightness dip) altında saklanıyor. Önceki sürümlerde "çirkin ara kare"
+   sorunu hep aynı yerden geliyordu: fade/hareket ne kadar dikkatli zamanlanırsa
+   zamanlansın, geçiş anı çıplak gözle görülüyordu. Çözüm: o kısa pencerede TÜM
+   amblemi (.emblem-frame) birlikte karart — geçiş bir kararma/aydınlanma nabzı
+   olarak okunur, altındaki mekanik hiç görünmez. Kapanışa özellikle dikkat edildi:
+   kararma tam kapanma anını örtüyor.
+
+   "logo.png'nin yavaşça kaybolup geri gelmesi" ise BİLİNÇLİ OLARAK kararma
+   kullanmıyor — o kısım net ve görünür kalmalı, sadece düz bir opacity fade.
+
+   Ölçüler splash ekranıyla birebir aynı, zaten uç viewport'larda (320px–2000px+)
+   metnin --gap'ten asla taşmayacağı doğrulanmış formül burada da kullanıldı.
+
+   HARFLER (.emblem-text .letter) artık public/js/main.js tarafından yönetiliyor
+   (gerçek rastgele sıra + kesin zamanlama için — bkz. main.js'teki HERO_TEXT_TIMING).
+   Döngü süresi 12s → 17s'ye çıkarıldı ki metin evresine (harflerin belirip 3sn
+   bekleyip kaybolması, main.js'te sabit 7000ms) yetecek yer açılsın. main.js'teki
+   HERO_TEXT_TIMING veya HERO_CYCLE_MS değiştirilirse, aşağıdaki @keyframes
+   yüzdeleri ELLE yeniden hesaplanmalı — otomatik türetilmiyor. */
+.hero {
+  padding: clamp(5rem, 11vw, 8rem) var(--gutter);
+  display: flex;
+  justify-content: center;
+}
+
+.hero-emblem { display: flex; justify-content: center; }
+
+.emblem-frame {
+  position: relative;
+  width: min(80vw, 34rem);
+  min-height: clamp(6rem, 16vw, 10rem);
+  overflow: hidden;
+  --gap: clamp(9rem, 30vw, 17rem);
+  animation: emblemDarken 17s ease-in-out infinite;
+}
+
+.emblem-logo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: emblemLogo 17s ease-in-out infinite;
+}
+.emblem-logo img { display: block; width: clamp(5.5rem, 14vw, 9rem); height: auto; max-height: 100%; }
+.emblem-logo.img-missing::before {
+  content: "CAN DURMUŞ";
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.emblem-logo.img-missing img { display: none; }
+
+.emblem-halves {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: emblemHalvesFade 17s ease-in-out infinite;
+}
+.emblem-half { flex: 0 0 auto; width: clamp(2.75rem, 7vw, 4.5rem); }
+.emblem-half img { display: block; width: 100%; height: auto; }
+.emblem-half.img-missing { aspect-ratio: 3 / 4; background: var(--bg-alt); border: 1px solid var(--line); }
+.emblem-half.img-missing img { display: none; }
+.emblem-half-left { animation: emblemHalfLeft 17s ease-in-out infinite; }
+.emblem-half-right { animation: emblemHalfRight 17s ease-in-out infinite; }
+
+.emblem-text-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+.emblem-text {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: clamp(1rem, 3.4vw, 1.9rem);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  white-space: nowrap;
+  /* Kendi opacity animasyonu YOK: görünürlük tamamen .letter çocuklarının,
+     main.js'in yönettiği kendi animasyonuna bırakıldı. */
+}
+
+/* Zaman çizelgesi (17sn'lik tek döngü — main.js'teki HERO_TEXT_TIMING ile senkron):
+   0.0–1.0s (0–5.9%)     logo görünür, tam parlak — bekleme
+   1.0–2.0s (5.9–11.8%)  KARARMA (8.8%'de dip) — logo, dip'e ulaşana kadar (8.8%)
+                         hızlıca kaybolur; sol/sağ 11.8%'e kadar açılmayı sürdürür.
+                         2.0s'de aydınlık gelirken her şey yeni halinde (main.js
+                         harflerin ilk belirmesini tam bu anda, t=2.0s'de başlatır).
+   2.0–9.0s (11.8–52.9%) sol/sağ tam açık/parlak — METİN EVRESİ burada (main.js):
+                         giriş ~2.0s + 3.0s bekleme + çıkış ~2.0s = 7.0s, t=9.0s'de biter.
+   9.0–10.0s (52.9–58.8%) KARARMA (55.9%'da dip) — sol/sağ, dip'e ulaşana kadar (55.9%)
+                         hızlıca kapanır; logo 58.8%'e kadar belirmeyi sürdürür.
+   10.0–11.0s (58.8–64.7%) logo görünür, tam parlak — bekleme
+   11.0–11.75s (64.7–69.1%) logo NET biçimde (kararma yok) hızlıca kaybolur
+   11.75–14.5s (69.1–85.3%) tam boşluk (kaybolma hızlandığı için biraz uzadı)
+   14.5–16.0s (85.3–94.1%) logo NET biçimde yavaşça geri gelir
+   16.0–17.0s (94.1–100%) logo görünür, bekleme — döngü 0%'a sorunsuz bağlanır */
+@keyframes emblemDarken {
+  0%, 5.9% { filter: brightness(1); }
+  8.8% { filter: brightness(0.16); }
+  11.8%, 52.9% { filter: brightness(1); }
+  55.9% { filter: brightness(0.16); }
+  58.8%, 100% { filter: brightness(1); }
+}
+@keyframes emblemLogo {
+  0%, 5.9% { opacity: 1; }
+  8.8%, 52.9% { opacity: 0; } /* kararmanın en koyu anında (dip) çoktan tam görünmez —
+    brightness geri gelmeden önce logo hâlâ görünür kalmasın diye hızlandırıldı */
+  58.8%, 64.7% { opacity: 1; }
+  69.1%, 85.3% { opacity: 0; } /* kaybolma hızlandırıldı: ~1.5s → ~0.75s (64.7→69.1%) */
+  94.1%, 100% { opacity: 1; }
+}
+@keyframes emblemHalvesFade {
+  0%, 5.9% { opacity: 0; }
+  11.8%, 52.9% { opacity: 1; }
+  55.9%, 100% { opacity: 0; } /* kararmanın en koyu anında (dip) çoktan tam görünmez —
+    brightness geri gelmeden önce hâlâ görünür/kapanmamış kalmasın diye hızlandırıldı */
+}
+@keyframes emblemHalfLeft {
+  0%, 5.9% { transform: translateX(0); }
+  11.8%, 52.9% { transform: translateX(calc(-0.5 * var(--gap))); }
+  55.9%, 100% { transform: translateX(0); }
+}
+@keyframes emblemHalfRight {
+  0%, 5.9% { transform: translateX(0); }
+  11.8%, 52.9% { transform: translateX(calc(0.5 * var(--gap))); }
+  55.9%, 100% { transform: translateX(0); }
+}
+
+/* HARFLER — main.js tarafından yönetilir.
+   Varsayılan (bu kural): JS hiç çalışmazsa ya da <noscript> devreye girerse
+   harfler DÜZ GÖRÜNÜR kalsın (erişilebilir yedek, layout shift yok). Hareket
+   izinliyse main.js sayfa boyanmadan ÖNCE, senkron olarak bu görünür halin
+   üzerine opacity:0/blur uygular — burada "flaş" olmaz. Bulanıklık miktarı
+   TEK bir yerden (--hero-letter-blur) ayarlanır. */
+:root { --hero-letter-blur: 8px; }
+.emblem-text .letter {
+  display: inline-block;
+  opacity: 1;
+  filter: blur(0);
+}
+@keyframes heroLetterIn {
+  from { opacity: 0; filter: blur(var(--hero-letter-blur)); }
+  to { opacity: 1; filter: blur(0); }
+}
+@keyframes heroLetterOut {
+  from { opacity: 1; filter: blur(0); }
+  to { opacity: 0; filter: blur(var(--hero-letter-blur)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emblem-frame, .emblem-logo, .emblem-halves, .emblem-half-left, .emblem-half-right, .emblem-text {
+    animation: none;
+  }
+  .emblem-logo { opacity: 1; }
+  .emblem-halves, .emblem-text { opacity: 0; }
+  /* .emblem-text .letter'a dokunmuyoruz: hareket kapalıyken main.js zaten hiç
+     çalışmıyor, harfler CSS varsayılanında (tam görünür) kalıyor. */
+}
+
+.eyebrow {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.9rem 2.1rem;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+.btn:hover { background: var(--accent); border-color: var(--accent); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn-ghost:hover { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+
+/* ===== Bölümler ===== */
+.section { padding: clamp(4rem, 9vw, 8rem) var(--gutter); }
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+.section-head h2 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 0.6rem; list-style: none; margin: 0; padding: 0; }
+.filter {
+  padding: 0.5rem 1.15rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out), background 0.3s var(--ease-out);
+}
+.filter:hover { color: var(--ink); border-color: var(--ink); }
+.filter.is-active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+/* Proje grid'i */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: clamp(3rem, 5vw, 4.5rem) clamp(1.75rem, 3.5vw, 3rem);
+}
+.project-card { display: block; }
+.project-card[hidden] { display: none; }
+
+.project-card .zoom-media { aspect-ratio: 4 / 3; }
+
+.project-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-top: 1.1rem;
+}
+.project-meta span {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Görsel kapsayıcı: giriş animasyonu (2.5 sn'de scale 1.08 → 1) ve hover zoom */
+.zoom-media {
+  overflow: hidden;
+  background: var(--bg-alt);
+  aspect-ratio: 4 / 3;
+}
+.zoom-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  transform-origin: center;
+  will-change: transform;
+}
+.zoom-media.in-view img {
+  transform: scale(1);
+  transition: transform 2.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Giriş animasyonu bittikten sonra (JS .settled ekler) hover zoom devreye girer */
+.zoom-media.settled img {
+  transition: transform 0.6s var(--ease-out);
+}
+@media (hover: hover) {
+  .project-card:hover .zoom-media.settled img,
+  .zoom-media.settled:hover img {
+    transform: scale(1.05);
+  }
+}
+
+/* Hakkımda */
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2.5rem, 5vw, 5rem);
+  background: var(--bg-alt);
+}
+@media (min-width: 800px) {
+  .about { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; }
+  /* Fotoğraf yoksa (admin'den kaldırılmışsa) metin, boş bir kolon bırakmadan
+     tam genişliği kullansın — .about-photo hiç render edilmiyor olsa bile
+     iki kolonlu grid tanımı tek kalan öğeyi ilk kolona sıkıştırmasın diye. */
+  .about--no-photo { grid-template-columns: minmax(0, 1fr); }
+}
+.about-photo { aspect-ratio: 4 / 5; }
+.about-text h2 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); margin-bottom: 1.5rem; }
+.about-text p { margin: 0; max-width: 60ch; white-space: pre-line; }
+
+/* Proje detayı */
+.detail-hero { aspect-ratio: 16 / 9; max-height: 80vh; width: 100%; }
+.detail-body { padding: clamp(3rem, 7vw, 6rem) var(--gutter); max-width: 62rem; }
+.detail-body h1 { font-size: clamp(2.6rem, 6vw, 4.75rem); margin-bottom: 1.75rem; }
+.detail-desc { font-size: 1.05rem; white-space: pre-line; margin: 0 0 1.75rem; }
+.detail-date {
+  margin: 0 0 3rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.empty { color: var(--muted); }
+
+.not-found { padding: 9rem var(--gutter); }
+.not-found h1 { font-size: clamp(2.6rem, 6vw, 4.25rem); margin-bottom: 2.25rem; }
+
+/* ===== CV sayfası ===== */
+.cv-page {}
+
+.cv-hero {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.5rem);
+}
+@media (min-width: 760px) {
+  .cv-hero { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); align-items: center; }
+}
+
+.cv-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-width: 20rem;
+  overflow: hidden;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+}
+.cv-photo img { width: 100%; height: 100%; object-fit: cover; }
+.cv-monogram {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.cv-photo.img-missing img { display: none; }
+.cv-photo.img-missing .cv-monogram { display: flex; }
+
+.cv-intro h1 { font-size: clamp(2.6rem, 6vw, 4.25rem); margin-bottom: 0.6rem; }
+.cv-role {
+  margin: 0 0 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.cv-summary { max-width: 55ch; margin: 0 0 1.75rem; }
+.cv-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* Footer: .main-content içinde tam genişlik, sidebar'la asla örtüşmez */
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  width: 100%;
+  padding: 2.25rem var(--gutter);
+  background: var(--ink);
+  color: var(--line);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .zoom-media img,
+  .zoom-media.settled img { transform: none !important; transition: none; }
+  #splash-screen { display: none; }
+}

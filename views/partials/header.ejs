@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' ? title + ' — Can Durmuş' : 'Can Durmuş' %></title>
+  <%
+    // WhatsApp/LinkedIn gibi platformlarda paylaşım kartı için sabit başlık/açıklama/görsel.
+    // Açıklama, Hakkımda biyografisinin ilk 1-2 cümlesi (yalnızca ana sayfada `about` mevcut);
+    // diğer sayfalarda veya biyografi boşsa sabit bir açıklamaya düşer.
+    var ogTitle = "Can Durmuş — Mimar";
+    var ogDescription = "Can Durmuş mimarlık portfolyosu";
+    if (typeof about !== 'undefined' && about && about.bio && about.bio.trim()) {
+      var ogSentences = about.bio.trim().match(/[^.!?]+[.!?]*/g) || [about.bio.trim()];
+      ogDescription = ogSentences.slice(0, 2).join(' ').trim();
+    }
+    var ogImage = siteUrl + '/og-image.png';
+  %>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Can Durmuş">
+  <meta property="og:title" content="<%= ogTitle %>">
+  <meta property="og:description" content="<%= ogDescription %>">
+  <meta property="og:image" content="<%= ogImage %>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="<%= canonicalUrl %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= ogTitle %>">
+  <meta name="twitter:description" content="<%= ogDescription %>">
+  <meta name="twitter:image" content="<%= ogImage %>">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <noscript><style>
+    .zoom-media img { transform: none; }
+    #splash-screen { display: none; }
+    .nav-toggle, .nav-scrim { display: none !important; }
+    .site-header { transform: none !important; }
+  </style></noscript>
+  <%# Not: sidebar/içerik ayrımı artık body'nin CSS Grid'i ile sağlanıyor, JS'e bağlı değil. %>
+</head>
+<body>
+  <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="siteNav">
+    <span></span><span></span><span></span>
+    <span class="sr-only">Menüyü aç</span>
+  </button>
+  <div class="nav-scrim" id="navScrim"></div>
+
+  <header class="site-header" id="siteNav">
+    <a href="/" class="brand">
+      <span class="brand-name">Can Durmuş</span>
+      <span class="brand-role">Mimar</span>
+    </a>
+    <nav>
+      <a href="/#projeler"><span class="nav-index">01</span>Projeler</a>
+      <a href="/#hakkimda"><span class="nav-index">02</span>Hakkımda</a>
+      <a href="/cv"><span class="nav-index">03</span>CV</a>
+    </nav>
+    <span class="nav-foot">İstanbul, TR</span>
+  </header>
+
+  <%# Grid'in 2. kolonu: main + footer burada, sidebar'ın kesinlikle dışında. %>
+  <div class="main-content">

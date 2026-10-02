@@ -1,0 +1,76 @@
+<%- include('header', { title: 'Panel', active: 'projects' }) %>
+
+<section class="page-head">
+  <div>
+    <p class="kicker">Genel Bakış</p>
+    <h1>Projeler</h1>
+  </div>
+  <a class="btn btn-primary" href="/admin/projects/new">+ Yeni Proje</a>
+</section>
+
+<section class="stats">
+  <div class="glass stat">
+    <span class="stat-label">Toplam Proje</span>
+    <span class="stat-value"><%= projects.length %></span>
+  </div>
+  <div class="glass stat">
+    <span class="stat-label">Kategori</span>
+    <span class="stat-value"><%= new Set(projects.map(function (p) { return p.category; })).size %></span>
+  </div>
+  <div class="glass stat">
+    <span class="stat-label">Hakkımda</span>
+    <span class="stat-value stat-status <%= about ? 'is-on' : '' %>"><%= about ? 'Yayında' : 'Eksik' %></span>
+  </div>
+  <div class="glass stat">
+    <span class="stat-label">CV</span>
+    <span class="stat-value stat-status <%= cv ? 'is-on' : '' %>"><%= cv ? 'Yayında' : 'Eksik' %></span>
+  </div>
+</section>
+
+<% if (projects.length === 0) { %>
+  <div class="glass empty-state">
+    <p>Henüz proje yok.</p>
+    <a class="btn btn-primary" href="/admin/projects/new">İlk projeni ekle</a>
+  </div>
+<% } else { %>
+  <section class="card-grid">
+    <% projects.forEach(function (project) { %>
+      <article class="glass project-card">
+        <div class="card-media">
+          <img src="<%= project.imageUrl %>" alt="<%= project.title %>" loading="lazy">
+          <div class="card-actions">
+            <a class="btn btn-glass btn-sm" href="/admin/projects/<%= project.id %>/edit">Düzenle</a>
+            <form method="post" action="/admin/projects/<%= project.id %>/delete" onsubmit="return confirm('Bu proje silinsin mi?')">
+              <button class="btn btn-danger btn-sm" type="submit">Sil</button>
+            </form>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3><%= project.title %></h3>
+          <div class="card-meta">
+            <span class="chip"><%= project.category %></span>
+            <time><%= new Date(project.createdAt).toLocaleDateString('tr-TR') %></time>
+          </div>
+        </div>
+      </article>
+    <% }) %>
+  </section>
+<% } %>
+
+<section class="glass about-panel">
+  <div>
+    <p class="kicker">Hakkımda</p>
+    <p class="about-preview"><%= about ? about.bio.slice(0, 200) + (about.bio.length > 200 ? '…' : '') : 'Biyografi henüz eklenmedi.' %></p>
+  </div>
+  <a class="btn btn-glass" href="/admin/about"><%= about ? 'Düzenle' : 'Ekle' %></a>
+</section>
+
+<section class="glass about-panel">
+  <div>
+    <p class="kicker">CV</p>
+    <p class="about-preview"><%= cv ? cv.name + ' — ' + cv.title : 'CV henüz eklenmedi.' %></p>
+  </div>
+  <a class="btn btn-glass" href="/admin/cv"><%= cv ? 'Düzenle' : 'Ekle' %></a>
+</section>
+
+<%- include('footer') %>

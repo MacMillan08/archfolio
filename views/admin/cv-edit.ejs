@@ -1,0 +1,57 @@
+<%- include('header', { title: 'CV', active: 'cv' }) %>
+
+<section class="page-head">
+  <div>
+    <p class="kicker">Özgeçmiş</p>
+    <h1>CV</h1>
+  </div>
+</section>
+
+<% if (error) { %><p class="alert"><%= error %></p><% } %>
+
+<form class="glass form-panel" method="post" action="/admin/cv" enctype="multipart/form-data">
+  <div class="form-fields">
+    <label class="field">
+      <span>Ad Soyad</span>
+      <input type="text" name="name" value="<%= cv ? cv.name || '' : '' %>" required>
+    </label>
+    <label class="field">
+      <span>Ünvan</span>
+      <input type="text" name="title" value="<%= cv ? cv.title || '' : '' %>" placeholder="Mimar &amp; İç Mekan Tasarımcısı" required>
+    </label>
+    <label class="field">
+      <span>Özet</span>
+      <textarea name="bio" rows="7" required><%= cv ? cv.bio || '' : '' %></textarea>
+    </label>
+    <label class="field">
+      <span>E-posta</span>
+      <input type="email" name="email" value="<%= cv ? cv.email || '' : '' %>">
+    </label>
+    <label class="field">
+      <span>Telefon</span>
+      <input type="text" name="phone" value="<%= cv ? cv.phone || '' : '' %>">
+    </label>
+    <label class="field">
+      <span>Lokasyon</span>
+      <input type="text" name="location" value="<%= cv ? cv.location || '' : '' %>" placeholder="İstanbul, Türkiye">
+    </label>
+    <label class="field">
+      <span>Fotoğraf <%= cv && cv.photoUrl ? '(değiştirmek için yeni dosya seç)' : '' %></span>
+      <input type="file" name="photo" accept="image/*">
+    </label>
+  </div>
+
+  <% if (cv && cv.photoUrl) { %>
+    <div class="form-preview">
+      <span class="field-label">Mevcut Fotoğraf</span>
+      <img class="preview" src="<%= cv.photoUrl %>" alt="Mevcut CV fotoğrafı">
+    </div>
+  <% } %>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Kaydet</button>
+    <a class="btn btn-glass" href="/admin">Vazgeç</a>
+  </div>
+</form>
+
+<%- include('footer') %>

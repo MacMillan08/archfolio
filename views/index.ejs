@@ -1,0 +1,113 @@
+<%- include('partials/header', { title: 'Portfolyo' }) %>
+
+<%# Giriş animasyonu — zamanlaması public/js/main.js'te. Sıra: logo.png ortada durur →
+    sol.png/sag.png'e bölünüp kayarak ayrılır → tam aralarında SADECE "CAN DURMUŞ" yazısı
+    belirir → site açılır. Gerçek görseller için bkz. public/images/README.txt
+    (logo.png, sol.png, sag.png gerekir). %>
+<div id="splash-screen">
+  <div class="splash-frame">
+    <div class="splash-logo-solo" aria-hidden="true">
+      <img src="/images/logo.png" alt="" onerror="this.closest('.splash-logo-solo').classList.add('img-missing')">
+    </div>
+    <div class="splash-halves" aria-hidden="true">
+      <div class="splash-half splash-half-left">
+        <img src="/images/sol.png" alt="" onerror="this.closest('.splash-half').classList.add('img-missing')">
+      </div>
+      <div class="splash-half splash-half-right">
+        <img src="/images/sag.png" alt="" onerror="this.closest('.splash-half').classList.add('img-missing')">
+      </div>
+    </div>
+    <div class="splash-text-mask">
+      <span class="splash-text">CAN DURMUŞ</span>
+    </div>
+  </div>
+  <button type="button" class="splash-skip" id="splashSkip">Atla</button>
+</div>
+
+<main>
+  <section class="hero">
+    <h1 class="sr-only">Can Durmuş — Mimarlık Portfolyosu</h1>
+    <%# Kayan yazı/ticker YOK. logo.png ↔ sol.png/sag.png geçişleri artık kısa bir
+        kararma (brightness dip) altında saklanıyor — açılma/kapanma anındaki "çirkin
+        ara kare" hiç çıplak gözükmüyor, sadece hafif bir kararıp aydınlanma hissi
+        veriyor. Sıra: logo durur → kararıp sol/sağ'a açılır (yazı iç içe belirir) →
+        birkaç saniye açık kalır → kararıp yeniden logo olarak kapanır → durur →
+        yavaşça (net biçimde, kararma olmadan) kaybolur → birkaç saniye boşluk →
+        yavaşça geri gelir → döngü baştan başlar. %>
+    <div class="hero-emblem" aria-hidden="true">
+      <div class="emblem-frame">
+        <div class="emblem-logo">
+          <img src="/images/logo.png" alt="" onerror="this.closest('.emblem-logo').classList.add('img-missing')">
+        </div>
+        <div class="emblem-halves">
+          <div class="emblem-half emblem-half-left">
+            <img src="/images/sol.png" alt="" onerror="this.closest('.emblem-half').classList.add('img-missing')">
+          </div>
+          <div class="emblem-half emblem-half-right">
+            <img src="/images/sag.png" alt="" onerror="this.closest('.emblem-half').classList.add('img-missing')">
+          </div>
+        </div>
+        <div class="emblem-text-mask">
+          <span class="emblem-text" aria-label="Can Durmuş"><span class="letter" aria-hidden="true">C</span><span class="letter" aria-hidden="true">A</span><span class="letter" aria-hidden="true">N</span><span class="letter" aria-hidden="true">&nbsp;</span><span class="letter" aria-hidden="true">D</span><span class="letter" aria-hidden="true">U</span><span class="letter" aria-hidden="true">R</span><span class="letter" aria-hidden="true">M</span><span class="letter" aria-hidden="true">U</span><span class="letter" aria-hidden="true">Ş</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projeler" class="section">
+    <div class="section-head">
+      <h2>Projeler</h2>
+      <% if (categories.length) { %>
+        <ul class="filters" aria-label="Kategoriler">
+          <li><button class="filter is-active" data-filter="all" type="button">Tümü</button></li>
+          <% categories.forEach(function (category) { %>
+            <li><button class="filter" data-filter="<%= category %>" type="button"><%= category %></button></li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+
+    <% if (projects.length === 0) { %>
+      <p class="empty">Henüz proje eklenmedi.</p>
+    <% } else { %>
+      <div class="project-grid">
+        <% projects.forEach(function (project) { %>
+          <a class="project-card" href="/projects/<%= project.id %>" data-category="<%= project.category %>">
+            <div class="zoom-media">
+              <img src="<%= project.imageUrl %>" alt="<%= project.title %>" loading="lazy">
+            </div>
+            <div class="project-meta">
+              <h3><%= project.title %></h3>
+              <span><%= project.category %></span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+
+  <section id="hakkimda" class="section about <%= about && about.profileImage ? '' : 'about--no-photo' %>">
+    <% if (about) { %>
+      <% if (about.profileImage) { %>
+        <div class="zoom-media about-photo">
+          <img src="<%= about.profileImage %>" alt="Profil fotoğrafı" loading="lazy">
+        </div>
+      <% } %>
+      <div class="about-text">
+        <h2>Hakkımda</h2>
+        <% if (about.bio && about.bio.trim()) { %>
+          <p><%= about.bio %></p>
+        <% } else { %>
+          <p class="empty">Biyografi henüz eklenmedi.</p>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="about-text">
+        <h2>Hakkımda</h2>
+        <p class="empty">Biyografi henüz eklenmedi.</p>
+      </div>
+    <% } %>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

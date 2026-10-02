@@ -1,0 +1,39 @@
+<%- include('partials/header', { title: 'CV' }) %>
+
+<%# CV içeriği artık veritabanından (Cv modeli) geliyor; yönetim panelinden /admin/cv üzerinden düzenlenir. %>
+<main class="cv-page">
+  <section class="cv-hero section">
+    <% if (cv) { %>
+      <div class="cv-photo">
+        <% if (cv.photoUrl) { %>
+          <img src="<%= cv.photoUrl %>" alt="<%= cv.name %>">
+        <% } else { %>
+          <span class="cv-monogram" aria-hidden="true"><%= cv.name.trim().split(/\s+/).map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase() %></span>
+        <% } %>
+      </div>
+      <div class="cv-intro">
+        <p class="eyebrow">Özgeçmiş</p>
+        <h1><%= cv.name %></h1>
+        <p class="cv-role"><%= cv.title %></p>
+        <p class="cv-summary"><%= cv.bio %></p>
+        <% if (cv.email || cv.phone || cv.location) { %>
+          <ul class="cv-contact">
+            <% if (cv.email) { %><li><%= cv.email %></li><% } %>
+            <% if (cv.phone) { %><li><%= cv.phone %></li><% } %>
+            <% if (cv.location) { %><li><%= cv.location %></li><% } %>
+          </ul>
+        <% } %>
+        <a class="btn" href="/#projeler">Projeleri Gör</a>
+      </div>
+    <% } else { %>
+      <div class="cv-intro">
+        <p class="eyebrow">Özgeçmiş</p>
+        <h1>CV henüz eklenmedi</h1>
+        <p class="cv-summary empty">Yönetim panelinden CV bilgileri eklendiğinde burada görünecek.</p>
+        <a class="btn" href="/#projeler">Projeleri Gör</a>
+      </div>
+    <% } %>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

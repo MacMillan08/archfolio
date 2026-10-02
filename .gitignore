@@ -1,0 +1,47 @@
+node_modules
+
+# Ortam değişkenleri / gizli bilgiler — .env.example hariç hepsi dışarıda kalır
+.env
+.env.local
+.env.*
+!.env.example
+
+# Derleme çıktıları
+/src/generated/prisma
+/dist
+/build
+/out
+
+# Log dosyaları
+*.log
+npm-debug.log*
+
+# İşletim sistemi / editör dosyaları
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# Yüklenen dosyalar (kullanıcı tarafından eklenen görseller vb.)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Yerel veritabanı / yedek dosyaları (bu proje Neon/Postgres kullanıyor ama ileride
+# yerel bir DB dosyası eklenirse de dışarıda kalsın)
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+# prisma/migrations altındaki .sql dosyaları şema geçmişinin parçası, sır değil — takip edilsin
+!/prisma/migrations/**/*.sql
+
+# Anahtar/sertifika dosyaları
+*.pem
+*.key
+*.p12
+
+# Test coverage ve geçici klasörler
+/coverage
+*.tmp
+.tmp/
+tmp/

@@ -1,0 +1,35 @@
+#!/bin/sh
+# Gizli dosyaların yanlışlıkla commit'lenmesini engeller.
+# Kurulum (tek seferlik, her makinede): bkz. README.md "Git hook kurulumu".
+
+blocked=""
+
+for file in $(git diff --cached --name-only --diff-filter=ACM); do
+  base=$(basename "$file")
+
+  case "$base" in
+    .env.example)
+      ;;
+    .env|.env.*)
+      blocked="$blocked\n  - $file (ortam değişkeni dosyası)"
+      ;;
+  esac
+
+  case "$base" in
+    *.pem|*.key|*.p12)
+      blocked="$blocked\n  - $file (anahtar/sertifika dosyası)"
+      ;;
+  esac
+done
+
+if [ -n "$blocked" ]; then
+  echo "COMMIT ENGELLENDI: asagidaki dosyalar gizli bilgi icerebilir ve repoya eklenmemeli:"
+  printf "%b\n" "$blocked"
+  echo ""
+  echo "Bu dosyayi gercekten commit'e eklemen gerekiyorsa once 'git reset HEAD <dosya>' ile"
+  echo "staging'den cikar, gercekten gerekliyse bu hook'u bilerek atlamak icin"
+  echo "'git commit --no-verify' kullan (onerilmez)."
+  exit 1
+fi
+
+exit 0

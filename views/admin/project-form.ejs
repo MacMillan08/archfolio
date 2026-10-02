@@ -1,0 +1,46 @@
+<% const isEdit = project && project.id; %>
+<%- include('header', { title: isEdit ? 'Projeyi Düzenle' : 'Yeni Proje', active: 'projects' }) %>
+
+<section class="page-head">
+  <div>
+    <p class="kicker"><%= isEdit ? 'Düzenleme' : 'Yeni Kayıt' %></p>
+    <h1><%= isEdit ? 'Projeyi Düzenle' : 'Yeni Proje' %></h1>
+  </div>
+</section>
+
+<% if (error) { %><p class="alert"><%= error %></p><% } %>
+
+<form class="glass form-panel" method="post" action="<%= isEdit ? '/admin/projects/' + project.id : '/admin/projects' %>" enctype="multipart/form-data">
+  <div class="form-fields">
+    <label class="field">
+      <span>Başlık</span>
+      <input type="text" name="title" value="<%= project ? project.title || '' : '' %>" required>
+    </label>
+    <label class="field">
+      <span>Kategori</span>
+      <input type="text" name="category" value="<%= project ? project.category || '' : '' %>" placeholder="Konut, Ticari, İç Mekan…" required>
+    </label>
+    <label class="field">
+      <span>Açıklama</span>
+      <textarea name="description" rows="7" required><%= project ? project.description || '' : '' %></textarea>
+    </label>
+    <label class="field">
+      <span>Fotoğraf <%= isEdit ? '· değiştirmek için yeni dosya seç' : '' %></span>
+      <input type="file" name="image" accept="image/*" <%= isEdit ? '' : 'required' %>>
+    </label>
+  </div>
+
+  <% if (isEdit && project.imageUrl) { %>
+    <div class="form-preview">
+      <span class="field-label">Mevcut Fotoğraf</span>
+      <img class="preview" src="<%= project.imageUrl %>" alt="Mevcut fotoğraf">
+    </div>
+  <% } %>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Kaydet</button>
+    <a class="btn btn-glass" href="/admin">Vazgeç</a>
+  </div>
+</form>
+
+<%- include('footer') %>
