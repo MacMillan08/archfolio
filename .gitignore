@@ -1,5 +1,8 @@
 node_modules
 
+# Yerel asistan talimatlari (repoya gitmesin)
+CLAUDE.md
+
 # Ortam değişkenleri / gizli bilgiler — .env.example hariç hepsi dışarıda kalır
 .env
 .env.local
